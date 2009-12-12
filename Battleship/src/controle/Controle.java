@@ -15,17 +15,21 @@ import model.Navio;
  */
 public class Controle {
 
-    Grid grid;
-    Janela janela;
+    private Grid grid;
+    private Janela janela;
+    private int largura, altura;
 
     public static void main(String[] args) {
+
         Controle cntl = new Controle();
 
     }
 
     public Controle() {
         this.janela = new Janela(this);
-        this.grid = new Grid(10, 10);
+        this.altura = 10;
+        this.largura = 10;
+        this.grid = new Grid(altura, largura);
         grid.addObservers(janela);
     }
 
@@ -45,13 +49,18 @@ public class Controle {
         this.janela = janela;
     }
 
-    public boolean inserirNavio(String nome, Point ini, Point fim) {
-        Navio navio = new Navio(nome, ini, fim, false);
+    public boolean inserirNavio(String nome, Point ini, int tamanho, boolean direcao) {
+        Navio navio = new Navio(nome, ini, tamanho, direcao);
+        boolean insercao = true;
         try {
-            grid.inserirNavio(navio);
-        }catch(Exception E){
-
+            this.grid.inserirNavio(navio);
+        } catch (Exception E) {
+            insercao = false;
         }
-        return true;
+        return insercao;
+    }
+
+    public void geraGrid(){
+        
     }
 }

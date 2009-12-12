@@ -20,10 +20,10 @@ public class Grid extends Entidade {
     public static void main(String[] args) {
         Grid x = new Grid(10, 10);
 
-        Navio crusaider = new Navio("Cruiser", new Point(1, 1), new Point(1, 3), false);
-        Navio battleship = new Navio("Battleship", new Point(2, 1), new Point(2, 4), false);
-        Navio destroyer = new Navio("Destroyer", new Point(3, 1), new Point(3, 2), false);
-        Navio submarine = new Navio("Submarine", new Point(4, 1), new Point(4, 1), false);
+        Navio crusaider = new Navio("Cruiser", new Point(1, 1),3, false);
+        Navio battleship = new Navio("Battleship", new Point(2, 1), 4, false);
+        Navio destroyer = new Navio("Destroyer", new Point(3, 1), 2, false);
+        Navio submarine = new Navio("Submarine", new Point(4, 1), 1, false);
         Mina mine1 = new Mina(8, 8);
         Mina mine2 = new Mina(9, 9);
         try {
@@ -36,9 +36,12 @@ public class Grid extends Entidade {
         } catch (Exception E) {
             System.out.println(E.getMessage());
         }
+
         System.out.println("");
         x.atirar(new Point(4, 1));
+
         x.printGrid();
+        
     }
 
     public Grid(int altura, int largura) {
@@ -46,6 +49,7 @@ public class Grid extends Entidade {
         this.largura = largura;
         mat = new int[altura][largura];
         navios = new ArrayList<Navio>();
+        minas = new ArrayList<Mina>();
         clearGrid();
     }
 
@@ -60,6 +64,9 @@ public class Grid extends Entidade {
         for (Navio n : navios) {
             System.out.println(n.toString() + (n.isDestruido() ? " destruído" : " não destruído"));
         }
+        for (Mina m : minas){
+            System.out.println(m.toString() + (m.isDestruida() ? " destruída" : " não destruída"));
+        }
     }
 
     public void setCoord(Point coord, int peso) {
@@ -73,6 +80,7 @@ public class Grid extends Entidade {
     }
 
     public boolean inserirMina(Mina mina) throws Exception {
+
         int[][] matriz = this.getMatriz();
         if (matriz[mina.x][mina.y] != Enum.MAR.getValor()) {
             throw new Exception("Posição do tabuleiro já ocupada.");
