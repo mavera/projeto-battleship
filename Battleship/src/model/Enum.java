@@ -10,7 +10,12 @@ import java.awt.Color;
  */
 public enum Enum {
 
-    MAR(1, Color.BLUE), NAVIO(2, Color.YELLOW), NAVIO_DESTRUIDO(3, Color.BLACK), MINA(4, Color.RED), TIRO_AGUA(5, Color.CYAN);
+    MAR(1, Color.BLUE),
+    NAVIO(2, Color.YELLOW),
+    MINA(3, Color.RED),
+    TIRO_AGUA(4, Color.CYAN),
+    NAVIO_DESTRUIDO(5, Color.BLACK),
+    MINA_DESTRUIDA(6,Color.DARK_GRAY);
 
     int valor;
     Color cor;
