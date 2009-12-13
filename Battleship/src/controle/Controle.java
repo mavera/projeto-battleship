@@ -109,7 +109,7 @@ public class Controle {
         } else if (descricao.equalsIgnoreCase("mina")) {
             log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
         } else if (descricao.equalsIgnoreCase("erro")) {
-            log += "Você atirou o torpedo em uma posição já descoberta! E acabou de perder 1 torpedo!";
+            log += "Você perdeu um torpedo atirando em uma posição já descoberta!";
         }
     }
 
