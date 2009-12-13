@@ -89,6 +89,9 @@ public class Controle {
     public int atirar(Point x) {
         quantTorpedos--;
         grid.atirar(x);
+        if(grid.isUltimoTorpedoDestruiuMina()){
+            quantTorpedos -= 5;
+        }
         refreshLog(x);
         return quantTorpedos;
     }
@@ -105,7 +108,7 @@ public class Controle {
         } else if (descricao.equalsIgnoreCase("navio")) {
             log += "O seu torpedo acertou um navio!";
 
-            log += this.grid.isUltimoTorpedoDestruiu() ? "Você destruiu um navio." : "";
+            log += this.grid.isUltimoTorpedoDestruiuNavio() ? "Você destruiu um navio." : "";
         } else if (descricao.equalsIgnoreCase("mina")) {
             log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
         } else if (descricao.equalsIgnoreCase("erro")) {
@@ -232,5 +235,9 @@ public class Controle {
 
     public int getAltura() {
         return altura;
+    }
+
+    public int getTorpedos() {
+        return quantTorpedos;
     }
 }

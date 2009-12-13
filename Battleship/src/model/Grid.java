@@ -17,13 +17,19 @@ public class Grid extends Entidade {
     private ArrayList<Navio> navios;
     private ArrayList<Mina> minas;
     private boolean gridCompleto;
-    private boolean ultimoTorpedoDestruiu;
+    private boolean ultimoTorpedoDestruiuNavio;
+    private boolean ultimoTorpedoDestruiuMina;
+
     public ArrayList<Mina> getMinas() {
         return minas;
     }
 
     public ArrayList<Navio> getNavios() {
         return navios;
+    }
+
+    public boolean isUltimoTorpedoDestruiuMina() {
+        return ultimoTorpedoDestruiuMina;
     }
 
     public static void main(String[] args) {
@@ -54,8 +60,8 @@ public class Grid extends Entidade {
 
     }
 
-    public boolean isUltimoTorpedoDestruiu() {
-        return ultimoTorpedoDestruiu;
+    public boolean isUltimoTorpedoDestruiuNavio() {
+        return ultimoTorpedoDestruiuNavio;
     }
 
     public String getDescricaoDoPonto(Point ponto) {
@@ -88,7 +94,8 @@ public class Grid extends Entidade {
         navios = new ArrayList<Navio>();
         minas = new ArrayList<Mina>();
         this.gridCompleto = false;
-        this.ultimoTorpedoDestruiu = false;
+        this.ultimoTorpedoDestruiuNavio = false;
+        this.ultimoTorpedoDestruiuMina = false;
         clearGrid();
     }
 
@@ -197,7 +204,8 @@ public class Grid extends Entidade {
     }
 
     public boolean atirar(Point p) {
-        this.ultimoTorpedoDestruiu = false;
+        this.ultimoTorpedoDestruiuNavio = false;
+        this.ultimoTorpedoDestruiuMina = false;
         switch (mat[p.y][p.x]) {
             case 1://Enum.MAR.getValor();
                 mat[p.y][p.x] = Enum.TIRO_AGUA.getValor();
@@ -208,6 +216,7 @@ public class Grid extends Entidade {
                 break;
             case 3://Enum.MINA.getValor();
                 mat[p.y][p.x] = Enum.MINA_DESTRUIDA.getValor();
+                this.ultimoTorpedoDestruiuMina = true;
                 verificaMinaDestruida();
                 break;
             default:
@@ -258,7 +267,7 @@ public class Grid extends Entidade {
 
                         }
                     }
-                    this.ultimoTorpedoDestruiu = true;
+                    this.ultimoTorpedoDestruiuNavio = true;
                     n.setDestruido(destruido);
                     break verificacaoNavios;
                 }
