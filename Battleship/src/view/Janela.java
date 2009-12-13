@@ -1,6 +1,6 @@
 package view;
 
-import controle.Controle;
+import controller.Controle;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;

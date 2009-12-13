@@ -10,12 +10,8 @@ public class Entidade implements Serializable {
 	protected ArrayList<Observer> listObs = new ArrayList<Observer>();
 
 	protected void notificar(){
-            if (listObs.isEmpty())
-                System.out.println("ta vazia");
-            else {
             for (Observer observer : listObs)
                 observer.atualizar();
-            }
 	}
 
 	public void addObservers(Observer o){

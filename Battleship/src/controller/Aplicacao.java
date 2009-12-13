@@ -1,7 +1,5 @@
 package controller;
 
-import controle.Controle;
-
 /**
  *
  * @author carlosgaldino
