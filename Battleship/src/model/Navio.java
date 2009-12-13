@@ -46,7 +46,7 @@ public class Navio {
         this.nome = nome;
         this.inicio = inicio;
         this.tamanho = tamanho;
-        this.fim = ((direcao == false) ? new Point(inicio.x, inicio.y + tamanho - 1) : new Point(inicio.x + tamanho - 1, inicio.y));
+        this.fim = ((direcao == true) ? new Point(inicio.x, inicio.y + tamanho - 1) : new Point(inicio.x + tamanho - 1, inicio.y));
         this.destruido = false;
         this.direcao = direcao;
 

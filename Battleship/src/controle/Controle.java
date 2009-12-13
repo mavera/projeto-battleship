@@ -38,8 +38,8 @@ public class Controle {
 
     public int iniciarJogoVersusComputador(int dificuldade) {
         this.resetarJogo();
+        this.jogoIniciado = true;
         this.geraGrid();
-        this.getGrid().printGrid();
         if (dificuldade == 0) {
             quantTorpedos = 30;
         } else if (dificuldade == 1) {
@@ -47,10 +47,8 @@ public class Controle {
         } else if (dificuldade == 2) {
             quantTorpedos = 60;
         }
-        this.grid.parseGrid();
-        this.jogoIniciado = true;
         log += "O jogo começou!";
-
+        this.grid.parseGrid();
         return quantTorpedos;
     }
 
@@ -92,7 +90,6 @@ public class Controle {
 
     public int iniciarJogoVersusJogador(int dificuldade) {
         this.resetarJogo();
-        this.geraGrid();
         if (grid.parseGrid()) {
             if (dificuldade == 0) {
                 quantTorpedos = 30;
@@ -102,7 +99,6 @@ public class Controle {
                 quantTorpedos = 60;
             }
         }
-        this.jogoIniciado = true;
         log += "O jogo começou!";
         return quantTorpedos;
     }
@@ -214,6 +210,14 @@ public class Controle {
 
     public int[][] getMatriz() {
         return grid.getMat();
+    }
+
+    public int getLargura() {
+        return largura;
+    }
+
+    public int getAltura() {
+        return altura;
     }
 
 }

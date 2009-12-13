@@ -46,6 +46,7 @@ public class Janela extends JFrame implements Observer {
         painelDesenho = painelTeste();
         painelPrincipal.add(painelDesenho, BorderLayout.CENTER);
         painelDesenho.add(painelInfo = new PainelInfo(), BorderLayout.SOUTH);
+        permissaoBotoes(false);
         getContentPane().add(painelPrincipal);
         setPreferredSize(new Dimension(700, 500));
         setVisible(true);
@@ -69,8 +70,10 @@ public class Janela extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
                 painelLateral.atualizarTorpedos(controle.iniciarJogoVersusComputador(dificuldade));
+                permissaoBotoes(true);
                 pack();
                 repaint();
+                setLocationRelativeTo(null);
             }
         });
 
@@ -79,8 +82,10 @@ public class Janela extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
                 painelLateral.atualizarCombo();
+                permissaoBotoes(true);
                 pack();
                 repaint();
+                setLocationRelativeTo(null);
             }
         });
 
@@ -127,19 +132,30 @@ public class Janela extends JFrame implements Observer {
     }
 
     public void atualizar() {
-        //if (controle.isJogoComecou()) {
-        System.out.println("entrei no atualizar");
-            int matriz[][] = controle.getMatriz();
-            for (int i = 0; i < 10; i++) {
-                for (int j = 0; j < 10; j++) {
+        //TODO adicionar o comportamento quando o jogo começou
+        int matriz[][] = controle.getMatriz();
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                if (controle.isJogoComecou()) {
+                    if (matriz[i][j] != Enum.NAVIO.getValor() && matriz[i][j] != Enum.MINA.getValor()) {
+                        botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
+                    }
+                }
+                else {
                     botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
                 }
             }
-            painelDesenho.repaint();
-        //}
+        }
+        painelDesenho.repaint();
     }
 
-
+    public void permissaoBotoes(boolean bool) {
+        int TAM = botoes.length;
+        for (int i = 0; i < TAM; i++) {
+            for (int j = 0; j < TAM; j++)
+                botoes[i][j].setEnabled(bool);
+        }
+    }
 
     /**
      * Classe que gerencia a mudança de estados dos radioButtons
@@ -169,26 +185,30 @@ public class Janela extends JFrame implements Observer {
                         @Override
                         public void mouseClicked(MouseEvent e) {
                             JButton botao = (JButton)e.getSource();
-                            Point ponto = interacaoMouse(botao.getLocation().x, botao.getLocation().y);
-                            String selecionado = painelLateral.opcaoSelecionada();
-                            System.out.println(selecionado);
-                             try {
-                                if (controle.isJogoComecou()) {
-                                     if (e.getButton() == MouseEvent.BUTTON1) {
-                                        if (!selecionado.contains("Mina"))
-                                            controle.inserirNavio(painelLateral.opcaoSelecionada(), ponto, false);
-                                        else
-                                            controle.inserirMina(ponto);
+                            if (botao.isEnabled()) {
+                                Point ponto = interacaoMouse(botao.getLocation().x, botao.getLocation().y);
+                                String selecionado = painelLateral.opcaoSelecionada();
+                                 try {
+                                    if (!controle.isJogoComecou()) {
+                                         if (e.getButton() == MouseEvent.BUTTON1) {
+                                            if (!selecionado.contains("Mina"))
+                                                controle.inserirNavio(painelLateral.opcaoSelecionada(), ponto, false);
+                                            else
+                                                controle.inserirMina(ponto);
+                                        }
+                                        else if (e.getButton() == MouseEvent.BUTTON3) {
+                                            if (!selecionado.contains("Mina"))
+                                                controle.inserirNavio(painelLateral.opcaoSelecionada(), ponto, true);
+                                            else
+                                                controle.inserirMina(ponto);
+                                        }
                                     }
-                                    else if (e.getButton() == MouseEvent.BUTTON2) {
-                                        if (!selecionado.contains("Mina"))
-                                            controle.inserirNavio(painelLateral.opcaoSelecionada(), ponto, true);
-                                        else
-                                            controle.inserirMina(ponto);
+                                    else {
+                                        controle.atirar(ponto);
                                     }
+                                } catch (Exception exception) {
+                                    JOptionPane.showMessageDialog(null, exception.getMessage(), "Informação", JOptionPane.WARNING_MESSAGE);
                                 }
-                            } catch (Exception exception) {
-                                JOptionPane.showMessageDialog(null, exception.getMessage(), "Informação", JOptionPane.WARNING_MESSAGE);
                             }
                         }
 
@@ -257,7 +277,6 @@ public class Janela extends JFrame implements Observer {
                 }
             });
             botaoPronto.setEnabled(false);
-            System.out.println("entrei no painellatera");
             labelTorpedos = new JLabel("Total de torpedos restantes = ");
             painelCombo.add(comboBox);
             painelCombo.add(botaoPronto);

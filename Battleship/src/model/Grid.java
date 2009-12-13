@@ -145,12 +145,13 @@ public class Grid extends Entidade {
                 Point fim = n.getFim();
                 int i, j;
                 int[][] matriz = this.getMatriz();
-                for (i = ini.x; i <= fim.x; i++) {
-                    for (j = ini.y; j <= fim.y; j++) {
+                for (i = ini.y; i <= fim.y; i++) {
+                    for (j = ini.x; j <= fim.x; j++) {
                         matriz[i][j] = Enum.MAR.getValor();
                     }
                 }
                 navios.remove(n);
+                notificar();
                 break;
             }
         }
@@ -162,40 +163,39 @@ public class Grid extends Entidade {
         Point ini = navio.getInicio();
         Point fim = navio.getFim();
         int i, j;
-        if (checarCoordenadasFinais(fim)) {
-            throw new Exception("Não é possível se posicionar o navio devido aos limites do tabuleiro");
+        if (!isDentroDosLimites(fim)) {
+            throw new Exception("Não é possível posicionar o navio devido aos limites do tabuleiro.");
         }
         int[][] matriz = this.getMatriz();
-        for (i = ini.x; i <= fim.x; i++) {
-            for (j = ini.y; j <= fim.y; j++) {
+        for (i = ini.y; i <= fim.y; i++) {
+            for (j = ini.x; j <= fim.x; j++) {
                 if (matriz[i][j] != Enum.MAR.getValor()) {
                     throw new Exception("Posição do tabuleiro já ocupada.");
                 }
             }
         }
 
-        for (i = ini.x; i <= fim.x; i++) {
-            for (j = ini.y; j <= fim.y; j++) {
+        for (i = ini.y; i <= fim.y; i++) {
+            for (j = ini.x; j <= fim.x; j++) {
                 matriz[i][j] = Enum.NAVIO.getValor();
             }
         }
         navios.add(navio);
-        this.printGrid();
         notificar();
         return true;
     }
 
     public boolean atirar(Point p) {
 
-        switch (mat[p.x][p.y]) {
+        switch (mat[p.y][p.x]) {
             case 1://Enum.MAR.getValor();
-                mat[p.x][p.y] = Enum.TIRO_AGUA.getValor();
+                mat[p.y][p.x] = Enum.TIRO_AGUA.getValor();
                 break;
             case 2://Enum.NAVIO.getValor();
-                mat[p.x][p.y] = Enum.NAVIO_DESTRUIDO.getValor();
+                mat[p.y][p.x] = Enum.NAVIO.getValor();
                 break;
             case 3://Enum.MINA.getValor();
-                mat[p.x][p.y] = Enum.MINA_DESTRUIDA.getValor();
+                mat[p.y][p.x] = Enum.MINA_DESTRUIDA.getValor();
                 break;
         }
         notificar();
@@ -236,12 +236,12 @@ public class Grid extends Entidade {
 
     //verifica se as coordenadas de inicio e fim do Navio se encontram dentro
     //do limite do tabuleiro
-    private boolean checarCoordenadasFinais(Point fim) {
-        int x = fim.y, y = fim.y;
+    private boolean isDentroDosLimites(Point fim) {
+        int x = fim.x, y = fim.y;
         if (x >= this.largura || y >= this.altura) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     private void clearGrid() {
