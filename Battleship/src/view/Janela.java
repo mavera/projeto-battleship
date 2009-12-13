@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import model.Observer;
+import model.Enum;
 
 /**
  *
@@ -12,7 +13,7 @@ import model.Observer;
  * @author Raphael Pereira de Faria
  *
  */
-public class Janela extends JFrame implements Observer{
+public class Janela extends JFrame implements Observer {
     private JPanel painelPrincipal;
     private JPanel painelDesenho;
     private String nomeRadios[] = { "Fácil", "Médio", "Difícil" };
@@ -43,36 +44,9 @@ public class Janela extends JFrame implements Observer{
         painelPrincipal.add(criaMenu(), BorderLayout.NORTH);
         painelLateral = new PainelLateral();
         painelDesenho = painelTeste();
-        painelDesenho.addMouseListener(new MouseAdapter() {
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                try {
-                    // Captura a coordenada do clique
-                    Point ponto = new Point(interacaoMouse(e.getX(), e.getY()));
-
-                    // Remove o ponto do caminho se for o caso
-                    //controle.inserirNavio(navio, ponto);
-                    repaint();
-                } catch (Exception exception) {
-                    JOptionPane.showMessageDialog(null, exception.getMessage(), "Posição inválida", JOptionPane.WARNING_MESSAGE);
-                }
-            }
-        });
-
-        /*
-        painelDesenho.addMouseMotionListener(new MouseMotionListener() {
-
-            public void mouseMoved(MouseEvent event) {
-            }
-
-            public void mouseDragged(MouseEvent e) {
-            }
-        });*/
         painelPrincipal.add(painelDesenho, BorderLayout.CENTER);
         painelDesenho.add(painelInfo = new PainelInfo(), BorderLayout.SOUTH);
         getContentPane().add(painelPrincipal);
-        //pack();
         setPreferredSize(new Dimension(700, 500));
         setVisible(true);
     }
@@ -93,12 +67,8 @@ public class Janela extends JFrame implements Observer{
         contraComputador.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                //TODO adicionar o comportamento de novo jogo
-                //painelPrincipal.remove(painelLateral);
-                
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
-                painelLateral.atualizarTorpedos(30);
-                System.out.println("entrei");
+                painelLateral.atualizarTorpedos(controle.iniciarJogoVersusComputador(dificuldade));
                 pack();
                 repaint();
             }
@@ -107,11 +77,7 @@ public class Janela extends JFrame implements Observer{
         contraJogador.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                //TODO adicionar o comportamento de novo jogo
-                //painelPrincipal.remove(painelLateral);
-                //painelLateral = new PainelLateral();
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
-                System.out.println("entrei");
                 painelLateral.atualizarCombo();
                 pack();
                 repaint();
@@ -157,9 +123,23 @@ public class Janela extends JFrame implements Observer{
         y /= 33;
         x--;
         y--;
-        System.out.println("(" + x + ", " + y + ")");
         return new Point(x, y);
     }
+
+    public void atualizar() {
+        //if (controle.isJogoComecou()) {
+        System.out.println("entrei no atualizar");
+            int matriz[][] = controle.getMatriz();
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
+                }
+            }
+            painelDesenho.repaint();
+        //}
+    }
+
+
 
     /**
      * Classe que gerencia a mudança de estados dos radioButtons
@@ -273,7 +253,7 @@ public class Janela extends JFrame implements Observer{
             botaoPronto.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    //controle.iniciarJogo();
+                    //controle.iniciarJogoVersusJogador();
                 }
             });
             botaoPronto.setEnabled(false);

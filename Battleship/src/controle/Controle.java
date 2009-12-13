@@ -25,19 +25,6 @@ public class Controle {
     private boolean jogoIniciado;
     private String log;
 
-    public static void main(String[] args) {
-
-        Controle cntl = new Controle();
-        cntl.geraGrid();
-        cntl.getGrid().printGrid();
-        try {
-            cntl.inserirNavio("Battleship", new Point(6, 6), false);
-
-        } catch (Exception E) {
-            System.out.println(E.getMessage());
-        }
-    }
-
     public Controle() {
         quantTorpedos = 0;
         this.janela = new Janela("Aplicativo", this);
@@ -49,9 +36,27 @@ public class Controle {
         grid.addObservers(janela);
     }
 
+    public int iniciarJogoVersusComputador(int dificuldade) {
+        this.resetarJogo();
+        this.geraGrid();
+        this.getGrid().printGrid();
+        if (dificuldade == 0) {
+            quantTorpedos = 30;
+        } else if (dificuldade == 1) {
+            quantTorpedos = 45;
+        } else if (dificuldade == 2) {
+            quantTorpedos = 60;
+        }
+        this.grid.parseGrid();
+        this.jogoIniciado = true;
+        log += "O jogo começou!";
+
+        return quantTorpedos;
+    }
+
     public void resetarJogo() {
         quantTorpedos = 0;
-        this.grid = new Grid(altura, largura);
+        this.grid.resetarGrid();
         this.jogoIniciado = false;
         this.log = "";
     }
@@ -85,15 +90,15 @@ public class Controle {
         }
     }
 
-    public int iniciarJogo(String dificuldade) {
+    public int iniciarJogoVersusJogador(int dificuldade) {
         this.resetarJogo();
         this.geraGrid();
         if (grid.parseGrid()) {
-            if (dificuldade.equalsIgnoreCase("Difícil")) {
+            if (dificuldade == 0) {
                 quantTorpedos = 30;
-            } else if (dificuldade.equalsIgnoreCase("Médio")) {
+            } else if (dificuldade == 1) {
                 quantTorpedos = 45;
-            } else if (dificuldade.equalsIgnoreCase("Fácil")) {
+            } else if (dificuldade == 2) {
                 quantTorpedos = 60;
             }
         }
@@ -194,7 +199,7 @@ public class Controle {
     public void geraMinas() {
         Random gerador = new Random(System.currentTimeMillis());
         int quantMinasInseridas = 0;
-        while (quantMinasInseridas != 2) {
+        while (quantMinasInseridas < 2) {
             quantMinasInseridas++;
             int posicaoRandomica = gerador.nextInt(81);
             Mina m = new Mina(posicaoRandomica % 9, posicaoRandomica / 9);
@@ -206,4 +211,9 @@ public class Controle {
             }
         }
     }
+
+    public int[][] getMatriz() {
+        return grid.getMat();
+    }
+
 }

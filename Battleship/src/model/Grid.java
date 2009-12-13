@@ -14,6 +14,9 @@ public class Grid extends Entidade {
     private int altura;
     private int largura;
     private int[][] mat;
+    private ArrayList<Navio> navios;
+    private ArrayList<Mina> minas;
+    private boolean gridCompleto;
 
     public ArrayList<Mina> getMinas() {
         return minas;
@@ -22,9 +25,6 @@ public class Grid extends Entidade {
     public ArrayList<Navio> getNavios() {
         return navios;
     }
-    private ArrayList<Navio> navios;
-    private ArrayList<Mina> minas;
-    private boolean gridCompleto;
 
     public static void main(String[] args) {
         Grid x = new Grid(10, 10);
@@ -263,5 +263,12 @@ public class Grid extends Entidade {
 
     public int getLargura() {
         return this.largura;
+    }
+
+    public void resetarGrid() {
+        clearGrid();
+        navios = new ArrayList<Navio>();
+        minas = new ArrayList<Mina>();
+        gridCompleto = false;
     }
 }
