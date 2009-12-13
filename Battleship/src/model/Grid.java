@@ -14,20 +14,30 @@ public class Grid extends Entidade {
     private int altura;
     private int largura;
     private int[][] mat;
+
+    public ArrayList<Mina> getMinas() {
+        return minas;
+    }
+
+    public ArrayList<Navio> getNavios() {
+        return navios;
+    }
     private ArrayList<Navio> navios;
     private ArrayList<Mina> minas;
+    private boolean gridCompleto;
 
     public static void main(String[] args) {
         Grid x = new Grid(10, 10);
 
-        Navio crusaider = new Navio("Cruiser", new Point(1, 1),3, false);
+        Navio cruiser = new Navio("Cruiser", new Point(1, 1), 3, false);
         Navio battleship = new Navio("Battleship", new Point(2, 1), 4, false);
         Navio destroyer = new Navio("Destroyer", new Point(3, 1), 2, false);
         Navio submarine = new Navio("Submarine", new Point(4, 1), 1, false);
         Mina mine1 = new Mina(8, 8);
         Mina mine2 = new Mina(9, 9);
         try {
-            x.inserirNavio(crusaider);
+            x.inserirNavio(cruiser);
+            x.inserirNavio(battleship);
             x.inserirNavio(battleship);
             x.inserirNavio(destroyer);
             x.inserirNavio(submarine);
@@ -37,11 +47,13 @@ public class Grid extends Entidade {
             System.out.println(E.getMessage());
         }
 
-        System.out.println("");
         x.atirar(new Point(4, 1));
-
         x.printGrid();
-        
+
+    }
+
+    public boolean isGridCompleto() {
+        return gridCompleto;
     }
 
     public Grid(int altura, int largura) {
@@ -50,6 +62,7 @@ public class Grid extends Entidade {
         mat = new int[altura][largura];
         navios = new ArrayList<Navio>();
         minas = new ArrayList<Mina>();
+        this.gridCompleto = false;
         clearGrid();
     }
 
@@ -64,7 +77,7 @@ public class Grid extends Entidade {
         for (Navio n : navios) {
             System.out.println(n.toString() + (n.isDestruido() ? " destruído" : " não destruído"));
         }
-        for (Mina m : minas){
+        for (Mina m : minas) {
             System.out.println(m.toString() + (m.isDestruida() ? " destruída" : " não destruída"));
         }
     }
@@ -79,18 +92,53 @@ public class Grid extends Entidade {
         this.mat[coord.x][coord.y] = peso;
     }
 
-    public boolean inserirMina(Mina mina) throws Exception {
+    public boolean parseGrid() {
+        return (this.navios.size() + this.minas.size() == 7) ? true : false;
+    }
 
-        int[][] matriz = this.getMatriz();
-        if (matriz[mina.x][mina.y] != Enum.MAR.getValor()) {
-            throw new Exception("Posição do tabuleiro já ocupada.");
+    public boolean minaExiste(Mina mina) {
+        for (Mina m : minas) {
+            if (m.x == mina.x && m.y == mina.y) {
+                return true;
+            }
         }
-        mat[mina.x][mina.y] = Enum.MINA.getValor();
-        minas.add(mina);
+        return false;
+    }
+    public boolean inserirMina(Mina mina) throws Exception {
+        if (!minaExiste(mina)) {
+            int[][] matriz = this.getMatriz();
+            if (matriz[mina.x][mina.y] != Enum.MAR.getValor()) {
+                throw new Exception("Posição do tabuleiro já ocupada.");
+            }
+            mat[mina.x][mina.y] = Enum.MINA.getValor();
+            minas.add(mina);
+        }
+        notificar();
         return true;
     }
 
+    private void verificarNavioExistente(String nome) {
+
+        for (Navio n : navios) {
+            if (n.getNome().equalsIgnoreCase(nome)) {
+                Point ini = n.getInicio();
+                Point fim = n.getFim();
+                int i, j;
+                int[][] matriz = this.getMatriz();
+                for (i = ini.x; i <= fim.x; i++) {
+                    for (j = ini.y; j <= fim.y; j++) {
+                        matriz[i][j] = Enum.MAR.getValor();
+                    }
+                }
+                navios.remove(n);
+                break;
+            }
+        }
+    }
+
     public boolean inserirNavio(Navio navio) throws Exception {
+        verificarNavioExistente(navio.getNome());
+        
         Point ini = navio.getInicio();
         Point fim = navio.getFim();
         int i, j;
@@ -112,6 +160,8 @@ public class Grid extends Entidade {
             }
         }
         navios.add(navio);
+        this.printGrid();
+        notificar();
         return true;
     }
 
@@ -163,10 +213,9 @@ public class Grid extends Entidade {
             }
         }
     }
-    
+
     //verifica se as coordenadas de inicio e fim do Navio se encontram dentro
     //do limite do tabuleiro
-
     private boolean checarCoordenadasFinais(Point fim) {
         int x = fim.y, y = fim.y;
         if (x >= this.largura || y >= this.altura) {

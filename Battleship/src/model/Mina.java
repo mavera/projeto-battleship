@@ -15,6 +15,11 @@ public class Mina extends Point {
 
     boolean destruida;
 
+    public Mina(Point p) {
+        super(p);
+        this.destruida = false;
+    }
+
     public Mina(int x, int y) {
         super(x, y);
         this.destruida = false;
@@ -27,5 +32,4 @@ public class Mina extends Point {
     public void setDestruida(boolean destruida) {
         this.destruida = destruida;
     }
-    
 }

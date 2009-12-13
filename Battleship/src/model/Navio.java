@@ -20,6 +20,14 @@ public class Navio {
     //false - horizontal | true - vertical
     private boolean direcao;
 
+    public Navio(String nome, int tamanho){
+        this.nome = nome;
+        this.tamanho = tamanho;
+        this.inicio = null;
+        this.fim = null;
+        this.destruido = false;
+        this.direcao = false;
+    }
     public Navio(String nome, int tamanho, Point inicio, Point fim) {
 
         this.nome = nome;
