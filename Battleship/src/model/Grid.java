@@ -38,7 +38,7 @@ public class Grid extends Entidade {
         try {
             x.inserirNavio(cruiser);
             x.inserirNavio(battleship);
-            x.inserirNavio(battleship);
+            x.inserirNavio(new Navio("Battleship", new Point(6, 5), 4, false));
             x.inserirNavio(destroyer);
             x.inserirNavio(submarine);
             x.inserirMina(mine1);
@@ -47,7 +47,9 @@ public class Grid extends Entidade {
             System.out.println(E.getMessage());
         }
 
+
         x.atirar(new Point(4, 1));
+        x.atirar(new Point(5, 1));
         x.printGrid();
 
     }
@@ -55,14 +57,18 @@ public class Grid extends Entidade {
     public String getDescricaoDoPonto(Point ponto) {
         int valor = mat[ponto.x][ponto.y];
         String descricao = "";
-        switch(valor){
-            case 1: descricao = "água";
+        switch (valor) {
+            case 1:
+                descricao = "água";
                 break;
-            case 2: descricao = "navio";
+            case 2:
+                descricao = "navio";
                 break;
-            case 3: descricao = "mina";
+            case 3:
+                descricao = "mina";
                 break;
-            default: descricao = "erro";
+            default:
+                descricao = "erro";
         }
         return descricao;
     }
@@ -192,12 +198,16 @@ public class Grid extends Entidade {
                 mat[p.y][p.x] = Enum.TIRO_AGUA.getValor();
                 break;
             case 2://Enum.NAVIO.getValor();
-                mat[p.y][p.x] = Enum.NAVIO.getValor();
+                mat[p.y][p.x] = Enum.NAVIO_DESCOBERTO.getValor();
+                verificaNavioDestruido();
                 break;
             case 3://Enum.MINA.getValor();
                 mat[p.y][p.x] = Enum.MINA_DESTRUIDA.getValor();
+                verificaMinaDestruida();
                 break;
+            default:
         }
+
         notificar();
         return true;
     }
@@ -207,31 +217,48 @@ public class Grid extends Entidade {
             for (Mina m : minas) {
                 if (mat[m.x][m.y] == Enum.MINA_DESTRUIDA.getValor()) {
                     m.setDestruida(true);
+                    break;
                 }
             }
         }
     }
 
-    private void verificaNavioDestruido() {
+    private boolean verificaNavioDestruido() {
 
         int i, j;
+        boolean destruido = true;
+
         if (!navios.isEmpty()) {
+            verificacaoNavios:
             for (Navio n : navios) {
+                if (n.isDestruido()) {
+                    continue;
+                }
                 Point ini = n.getInicio();
                 Point fim = n.getFim();
-                boolean destruido = true;
+                destruido = true;
                 out:
-                for (i = ini.x; i <= fim.x; i++) {
-                    for (j = ini.y; j <= fim.y; j++) {
-                        if (mat[i][j] != Enum.NAVIO_DESTRUIDO.getValor()) {
+                for (i = ini.y; i <= fim.y; i++) {
+                    for (j = ini.x; j <= fim.x; j++) {
+                        if (mat[i][j] != Enum.NAVIO_DESCOBERTO.getValor()) {
                             destruido = false;
                             break out;
                         }
                     }
                 }
-                n.setDestruido(destruido);
+                if (destruido) {
+                    for (i = ini.y; i <= fim.y; i++) {
+                        for (j = ini.x; j <= fim.x; j++) {
+                            mat[i][j] = Enum.NAVIO_DESTRUIDO.getValor();
+                        }
+                    }
+                    n.setDestruido(destruido);
+                    break verificacaoNavios;
+                }
             }
         }
+        
+        return destruido;
     }
 
     //verifica se as coordenadas de inicio e fim do Navio se encontram dentro
