@@ -52,6 +52,21 @@ public class Grid extends Entidade {
 
     }
 
+    public String getDescricaoDoPonto(Point ponto) {
+        int valor = mat[ponto.x][ponto.y];
+        String descricao = "";
+        switch(valor){
+            case 1: descricao = "água";
+                break;
+            case 2: descricao = "navio";
+                break;
+            case 3: descricao = "mina";
+                break;
+            default: descricao = "erro";
+        }
+        return descricao;
+    }
+
     public boolean isGridCompleto() {
         return gridCompleto;
     }
@@ -64,6 +79,10 @@ public class Grid extends Entidade {
         minas = new ArrayList<Mina>();
         this.gridCompleto = false;
         clearGrid();
+    }
+
+    public int[][] getMat() {
+        return mat;
     }
 
     public void printGrid() {
@@ -104,6 +123,7 @@ public class Grid extends Entidade {
         }
         return false;
     }
+
     public boolean inserirMina(Mina mina) throws Exception {
         if (!minaExiste(mina)) {
             int[][] matriz = this.getMatriz();
@@ -138,7 +158,7 @@ public class Grid extends Entidade {
 
     public boolean inserirNavio(Navio navio) throws Exception {
         verificarNavioExistente(navio.getNome());
-        
+
         Point ini = navio.getInicio();
         Point fim = navio.getFim();
         int i, j;

@@ -5,12 +5,11 @@
 package controle;
 
 import java.awt.Point;
-import java.util.ArrayList;
 import java.util.Random;
 import model.Grid;
 import model.Mina;
-import model.Mina;
 import model.Navio;
+import view.Janela;
 
 /**
  *
@@ -24,6 +23,7 @@ public class Controle {
     private int largura, altura;
     private int quantTorpedos;
     private boolean jogoIniciado;
+    private String log;
 
     public static void main(String[] args) {
 
@@ -40,19 +40,54 @@ public class Controle {
 
     public Controle() {
         quantTorpedos = 0;
-        this.janela = new Janela(this);
+        this.janela = new Janela("Aplicativo", this);
         this.altura = 10;
         this.largura = 10;
         this.grid = new Grid(altura, largura);
         this.jogoIniciado = false;
+        this.log = "";
         grid.addObservers(janela);
+    }
+
+    public void resetarJogo() {
+        quantTorpedos = 0;
+        this.grid = new Grid(altura, largura);
+        this.jogoIniciado = false;
+        this.log = "";
     }
 
     public boolean isJogoComecou() {
         return jogoIniciado;
     }
 
+    public int atirar(Point x) {
+        quantTorpedos--;
+        grid.atirar(x);
+        refreshLog(x);
+        return quantTorpedos;
+    }
+    //Função para atualizar o Log de ações do usuário
+    //atualizada a cada tiro realizado
+
+    public void refreshLog(Point ponto) {
+        char[] letras = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+        String coordenada = "\n(" + letras[ponto.x] + "," + ponto.y + ")";
+        log += coordenada;
+        String descricao = grid.getDescricaoDoPonto(ponto);
+        if (descricao.equalsIgnoreCase("água")) {
+            log += "Você atirou na água!";
+        } else if (descricao.equalsIgnoreCase("navio")) {
+            log += "O seu torpedo acertou um navio!";
+        } else if (descricao.equalsIgnoreCase("mina")) {
+            log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
+        } else if (descricao.equalsIgnoreCase("erro")) {
+            log += "Você atirou o torpedo em uma posição já calculada! E acabou de perder 1 torpedo!";
+        }
+    }
+
     public int iniciarJogo(String dificuldade) {
+        this.resetarJogo();
+        this.geraGrid();
         if (grid.parseGrid()) {
             if (dificuldade.equalsIgnoreCase("Difícil")) {
                 quantTorpedos = 30;
@@ -63,6 +98,7 @@ public class Controle {
             }
         }
         this.jogoIniciado = true;
+        log += "O jogo começou!";
         return quantTorpedos;
     }
 
@@ -82,15 +118,12 @@ public class Controle {
         this.janela = janela;
     }
 
-    public ArrayList whatChanged() {
-        ArrayList naviosEMinas = new ArrayList();
-        for (Navio n : this.grid.getNavios()) {
-            naviosEMinas.add(n);
-        }
-        for (Mina m : this.grid.getMinas()) {
-            naviosEMinas.add(m);
-        }
-        return naviosEMinas;
+    public int[][] whatChanged() {
+        return this.grid.getMat();
+    }
+
+    public String getLog() {
+        return log;
     }
 
     private int getTamanhoPorNome(String nome) {
@@ -113,7 +146,7 @@ public class Controle {
 
         Mina mina = new Mina(ini);
         this.grid.inserirMina(mina);
-        
+
     }
 
     public void inserirNavio(String nome, Point ini, boolean direcao) throws Exception {

@@ -1,8 +1,10 @@
 package view;
 
+import controle.Controle;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import model.Observer;
 
 /**
  *
@@ -10,7 +12,7 @@ import javax.swing.*;
  * @author Raphael Pereira de Faria
  *
  */
-public class Janela extends JFrame {
+public class Janela extends JFrame implements Observer{
     private JPanel painelPrincipal;
     private JPanel painelDesenho;
     private String nomeRadios[] = { "Fácil", "Médio", "Difícil" };
@@ -29,9 +31,9 @@ public class Janela extends JFrame {
      * @param titulo título do frame
      * @param cont1  objeto da classe controle
      */
-    public Janela(String titulo) {//, Controle cont1) {
+    public Janela(String titulo, Controle cont1) {
         super(titulo);
-        //this.controle = cont1;
+        this.controle = cont1;
         //this.grid = grid;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500);
