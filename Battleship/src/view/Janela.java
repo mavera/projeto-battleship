@@ -126,8 +126,8 @@ public class Janela extends JFrame implements Observer {
      * @return ponto contendo a coordenada no grid
      */
     private Point interacaoMouse(int x, int y) {
-        x /= 44;
-        y /= 33;
+        x /= botoes[0][0].getSize().width;
+        y /= botoes[0][0].getSize().height;
         x--;
         y--;
         return new Point(x, y);
