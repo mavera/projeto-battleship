@@ -59,7 +59,7 @@ public class Grid extends Entidade {
     }
 
     public String getDescricaoDoPonto(Point ponto) {
-        int valor = mat[ponto.x][ponto.y+1];
+        int valor = mat[ponto.y][ponto.x];
         String descricao = "";
         switch (valor) {
             case 1:
