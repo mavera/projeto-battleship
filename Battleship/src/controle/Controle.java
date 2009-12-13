@@ -25,6 +25,13 @@ public class Controle {
     private boolean jogoIniciado;
     private String log;
 
+    public static void main(String[] args) throws Exception {
+        Controle x = new Controle();
+        x.inserirNavio("Battleship", new Point(8, 8), false);
+
+
+    }
+
     public Controle() {
         quantTorpedos = 0;
         this.janela = new Janela("Aplicativo", this);
@@ -49,6 +56,22 @@ public class Controle {
         }
         log += "O jogo começou!";
         this.grid.parseGrid();
+        return quantTorpedos;
+    }
+
+    public int iniciarJogoVersusJogador(int dificuldade) {
+        this.resetarJogo();
+        if (grid.parseGrid()) {
+            if (dificuldade == 0) {
+                quantTorpedos = 30;
+            } else if (dificuldade == 1) {
+                quantTorpedos = 45;
+            } else if (dificuldade == 2) {
+                quantTorpedos = 60;
+            }
+        }
+        this.jogoIniciado = true;
+        log += "O jogo começou!";
         return quantTorpedos;
     }
 
@@ -84,23 +107,8 @@ public class Controle {
         } else if (descricao.equalsIgnoreCase("mina")) {
             log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
         } else if (descricao.equalsIgnoreCase("erro")) {
-            log += "Você atirou o torpedo em uma posição já calculada! E acabou de perder 1 torpedo!";
+            log += "Você atirou o torpedo em uma posição já descoberta! E acabou de perder 1 torpedo!";
         }
-    }
-
-    public int iniciarJogoVersusJogador(int dificuldade) {
-        this.resetarJogo();
-        if (grid.parseGrid()) {
-            if (dificuldade == 0) {
-                quantTorpedos = 30;
-            } else if (dificuldade == 1) {
-                quantTorpedos = 45;
-            } else if (dificuldade == 2) {
-                quantTorpedos = 60;
-            }
-        }
-        log += "O jogo começou!";
-        return quantTorpedos;
     }
 
     public Grid getGrid() {
@@ -150,10 +158,14 @@ public class Controle {
 
     }
 
-    public void inserirNavio(String nome, Point ini, boolean direcao) throws Exception {
+    public void inserirNavio(String nome, Point ini, boolean direcao) {
         int tamanho = getTamanhoPorNome(nome);
         Navio navio = new Navio(nome, ini, tamanho, direcao);
-        this.grid.inserirNavio(navio);
+        try {
+            this.grid.inserirNavio(navio);
+        } catch (Exception E) {
+            System.out.println(E.getMessage());
+        }
     }
 
     public void geraGrid() {
@@ -211,7 +223,6 @@ public class Controle {
     public int[][] getMatriz() {
         return grid.getMat();
     }
-
     public int getLargura() {
         return largura;
     }

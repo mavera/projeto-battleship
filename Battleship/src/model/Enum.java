@@ -15,8 +15,8 @@ public enum Enum {
     MINA(3, Color.RED),
     TIRO_AGUA(4, Color.BLUE),
     NAVIO_DESTRUIDO(5, Color.BLACK),
-    MINA_DESTRUIDA(6,Color.LIGHT_GRAY);
-
+    MINA_DESTRUIDA(6,Color.LIGHT_GRAY),
+    NAVIO_DESCOBERTO(7, Color.ORANGE);
     int valor;
     Color cor;
 
