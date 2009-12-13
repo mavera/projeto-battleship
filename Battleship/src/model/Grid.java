@@ -17,7 +17,7 @@ public class Grid extends Entidade {
     private ArrayList<Navio> navios;
     private ArrayList<Mina> minas;
     private boolean gridCompleto;
-
+    private boolean ultimoTorpedoDestruiu;
     public ArrayList<Mina> getMinas() {
         return minas;
     }
@@ -54,8 +54,12 @@ public class Grid extends Entidade {
 
     }
 
+    public boolean isUltimoTorpedoDestruiu() {
+        return ultimoTorpedoDestruiu;
+    }
+
     public String getDescricaoDoPonto(Point ponto) {
-        int valor = mat[ponto.x][ponto.y];
+        int valor = mat[ponto.x][ponto.y+1];
         String descricao = "";
         switch (valor) {
             case 1:
@@ -84,6 +88,7 @@ public class Grid extends Entidade {
         navios = new ArrayList<Navio>();
         minas = new ArrayList<Mina>();
         this.gridCompleto = false;
+        this.ultimoTorpedoDestruiu = false;
         clearGrid();
     }
 
@@ -192,7 +197,7 @@ public class Grid extends Entidade {
     }
 
     public boolean atirar(Point p) {
-
+        this.ultimoTorpedoDestruiu = false;
         switch (mat[p.y][p.x]) {
             case 1://Enum.MAR.getValor();
                 mat[p.y][p.x] = Enum.TIRO_AGUA.getValor();
@@ -250,8 +255,10 @@ public class Grid extends Entidade {
                     for (i = ini.y; i <= fim.y; i++) {
                         for (j = ini.x; j <= fim.x; j++) {
                             mat[i][j] = Enum.NAVIO_DESTRUIDO.getValor();
+
                         }
                     }
+                    this.ultimoTorpedoDestruiu = true;
                     n.setDestruido(destruido);
                     break verificacaoNavios;
                 }

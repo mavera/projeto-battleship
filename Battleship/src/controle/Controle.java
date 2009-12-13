@@ -97,13 +97,15 @@ public class Controle {
 
     public void refreshLog(Point ponto) {
         char[] letras = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
-        String coordenada = "\n(" + letras[ponto.x] + "," + ponto.y + ")";
+        String coordenada = "\n(" + letras[ponto.x] + "," + (ponto.y + 1) + ")";
         log += coordenada;
         String descricao = grid.getDescricaoDoPonto(ponto);
         if (descricao.equalsIgnoreCase("água")) {
             log += "Você atirou na água!";
         } else if (descricao.equalsIgnoreCase("navio")) {
             log += "O seu torpedo acertou um navio!";
+
+            log += this.grid.isUltimoTorpedoDestruiu() ? "Você destruiu um navio." : "";
         } else if (descricao.equalsIgnoreCase("mina")) {
             log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
         } else if (descricao.equalsIgnoreCase("erro")) {
@@ -223,6 +225,7 @@ public class Controle {
     public int[][] getMatriz() {
         return grid.getMat();
     }
+
     public int getLargura() {
         return largura;
     }
@@ -230,5 +233,4 @@ public class Controle {
     public int getAltura() {
         return altura;
     }
-
 }
