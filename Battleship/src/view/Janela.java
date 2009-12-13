@@ -20,7 +20,6 @@ public class Janela extends JFrame implements Observer {
     private ButtonGroup grupo;
     private JRadioButtonMenuItem radioButtons[];
     private int dificuldade;
-    //private Grid grid;
     private JMenu botaoNovoJogo;
     private Controle controle;
     private PainelInfo painelInfo;
@@ -70,6 +69,7 @@ public class Janela extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
                 painelLateral.atualizarTorpedos(controle.iniciarJogoVersusComputador(dificuldade));
+                painelInfo.atualizarInformacoes(controle.getLog());
                 permissaoBotoes(true);
                 pack();
                 repaint();
@@ -82,6 +82,8 @@ public class Janela extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
                 painelLateral.atualizarCombo();
+                controle.resetarJogo();
+                painelInfo.atualizarInformacoes(controle.getLog());
                 permissaoBotoes(true);
                 pack();
                 repaint();
@@ -137,12 +139,24 @@ public class Janela extends JFrame implements Observer {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 if (controle.isJogoComecou()) {
-                    if (matriz[i][j] != Enum.NAVIO.getValor() && matriz[i][j] != Enum.MINA.getValor()) {
-                        botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
+                    if (controle.isVersusComputador()) {
+                        if (matriz[i][j] != Enum.NAVIO.getValor() && matriz[i][j] != Enum.MINA.getValor()) {
+                            botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
+                        }
+                    }
+                    else {
+                        if (matriz[i][j] == Enum.NAVIO.getValor() || matriz[i][j] == Enum.MINA.getValor()) {
+                            botoes[i][j].setBackground(Enum.getCorPorValor(Enum.MAR.getValor()));
+                        }
+                        else {
+                            botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
+                        }
                     }
                 }
+
                 else {
                     botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
+                    painelLateral.ativarBotaoPronto(controle.isJogoConfigurado());
                 }
             }
         }
@@ -155,6 +169,15 @@ public class Janela extends JFrame implements Observer {
             for (int j = 0; j < TAM; j++)
                 botoes[i][j].setEnabled(bool);
         }
+    }
+
+    public void mensagemFinalDeJogo(boolean status) {
+        if (status)
+            JOptionPane.showMessageDialog(null, "Parabéns! Você venceu o jogo.", "Final de jogo", JOptionPane.INFORMATION_MESSAGE);
+        else
+            JOptionPane.showMessageDialog(null, "Que pena! Você perdeu o jogo.", "Final de jogo", JOptionPane.INFORMATION_MESSAGE);
+        permissaoBotoes(false);
+        controle.resetarJogo();
     }
 
     /**
@@ -204,7 +227,8 @@ public class Janela extends JFrame implements Observer {
                                         }
                                     }
                                     else {
-                                        controle.atirar(ponto);
+                                        painelLateral.atualizarTorpedos(controle.atirar(ponto));
+                                        painelInfo.atualizarInformacoes(controle.getLog());
                                     }
                                 } catch (Exception exception) {
                                     JOptionPane.showMessageDialog(null, exception.getMessage(), "Informação", JOptionPane.WARNING_MESSAGE);
@@ -253,27 +277,28 @@ public class Janela extends JFrame implements Observer {
         }
 
         //TODO implementar método das mensagens do board
-        /*
         public void atualizarInformacoes(String info) {
-            informacoes.setText(informacoes + info);
-        }*/
+            textArea.setText(info);
+        }
+        
     }
 
     private class PainelLateral extends JPanel {
         private JComboBox comboBox;
-        private String barcos[] = { "Battleship", "Cruiser", "Submarine", "Destroyer", "Patrol Boat", "Mina 1", "Mina 2" };
+        private String barcos[] = { "Battleship", "Cruiser", "Submarine", "Destroyer", "Patrol Boat", "Mina" };
         private JLabel labelTorpedos;
         private JPanel painelCombo;
+        private JButton botaoPronto;
 
         public PainelLateral() {
             this.setLayout(new BorderLayout());
             painelCombo = new JPanel();
             comboBox = new JComboBox(barcos);
-            JButton botaoPronto = new JButton("Pronto");
+            botaoPronto = new JButton("Pronto");
             botaoPronto.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    //controle.iniciarJogoVersusJogador();
+                    atualizarTorpedos(controle.iniciarJogoVersusJogador(dificuldade));
                 }
             });
             botaoPronto.setEnabled(false);
@@ -295,12 +320,17 @@ public class Janela extends JFrame implements Observer {
 
         public void atualizarCombo() {
             painelCombo.setVisible(true);
+            comboBox.setSelectedIndex(0);
             labelTorpedos.setVisible(false);
             this.repaint();
         }
 
         public String opcaoSelecionada() {
             return (String)comboBox.getSelectedItem();
+        }
+
+        public void ativarBotaoPronto(boolean status) {
+            botaoPronto.setEnabled(status);
         }
 
     }

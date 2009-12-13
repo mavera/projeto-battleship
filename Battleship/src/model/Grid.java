@@ -32,34 +32,6 @@ public class Grid extends Entidade {
         return ultimoTorpedoDestruiuMina;
     }
 
-    public static void main(String[] args) {
-        Grid x = new Grid(10, 10);
-
-        Navio cruiser = new Navio("Cruiser", new Point(1, 1), 3, false);
-        Navio battleship = new Navio("Battleship", new Point(2, 1), 4, false);
-        Navio destroyer = new Navio("Destroyer", new Point(3, 1), 2, false);
-        Navio submarine = new Navio("Submarine", new Point(4, 1), 1, false);
-        Mina mine1 = new Mina(8, 8);
-        Mina mine2 = new Mina(9, 9);
-        try {
-            x.inserirNavio(cruiser);
-            x.inserirNavio(battleship);
-            x.inserirNavio(new Navio("Battleship", new Point(6, 5), 4, false));
-            x.inserirNavio(destroyer);
-            x.inserirNavio(submarine);
-            x.inserirMina(mine1);
-            x.inserirMina(mine2);
-        } catch (Exception E) {
-            System.out.println(E.getMessage());
-        }
-
-
-        x.atirar(new Point(4, 1));
-        x.atirar(new Point(5, 1));
-        x.printGrid();
-
-    }
-
     public boolean isUltimoTorpedoDestruiuNavio() {
         return ultimoTorpedoDestruiuNavio;
     }
@@ -68,14 +40,17 @@ public class Grid extends Entidade {
         int valor = mat[ponto.y][ponto.x];
         String descricao = "";
         switch (valor) {
-            case 1:
+            case 4:
                 descricao = "água";
                 break;
-            case 2:
-                descricao = "navio";
+            case 5:
+                descricao = "destruido";
                 break;
-            case 3:
+            case 6:
                 descricao = "mina";
+                break;
+            case 7:
+                descricao = "navio";
                 break;
             default:
                 descricao = "erro";
@@ -133,24 +108,25 @@ public class Grid extends Entidade {
         return (this.navios.size() + this.minas.size() == 7) ? true : false;
     }
 
-    public boolean minaExiste(Mina mina) {
+    public void minaExiste(Mina mina) {
         for (Mina m : minas) {
             if (m.x == mina.x && m.y == mina.y) {
-                return true;
+                minas.remove(mina);
+                mat[mina.y][mina.x] = Enum.MAR.getValor();
             }
         }
-        return false;
     }
 
     public boolean inserirMina(Mina mina) throws Exception {
-        if (!minaExiste(mina)) {
-            int[][] matriz = this.getMatriz();
-            if (matriz[mina.x][mina.y] != Enum.MAR.getValor()) {
-                throw new Exception("Posição do tabuleiro já ocupada.");
-            }
-            mat[mina.x][mina.y] = Enum.MINA.getValor();
-            minas.add(mina);
+        if (minas.size() >= 2) {
+            minaExiste(minas.get(0));
         }
+        int[][] matriz = this.getMatriz();
+        if (matriz[mina.y][mina.x] != Enum.MAR.getValor()) {
+            throw new Exception("Posição do tabuleiro já ocupada.");
+        }
+        mat[mina.y][mina.x] = Enum.MINA.getValor();
+        minas.add(mina);
         notificar();
         return true;
     }
@@ -294,6 +270,7 @@ public class Grid extends Entidade {
                 mat[i][j] = Enum.MAR.getValor();
             }
         }
+        notificar();
     }
 
     private int[][] getMatriz() {
@@ -313,5 +290,6 @@ public class Grid extends Entidade {
         navios = new ArrayList<Navio>();
         minas = new ArrayList<Mina>();
         gridCompleto = false;
+        notificar();
     }
 }

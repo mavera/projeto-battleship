@@ -24,13 +24,8 @@ public class Controle {
     private int quantTorpedos;
     private boolean jogoIniciado;
     private String log;
-
-    public static void main(String[] args) throws Exception {
-        Controle x = new Controle();
-        x.inserirNavio("Battleship", new Point(8, 8), false);
-
-
-    }
+    private int quantidadeNaviosDestruidos;
+    private boolean versusComputador;
 
     public Controle() {
         quantTorpedos = 0;
@@ -40,46 +35,47 @@ public class Controle {
         this.grid = new Grid(altura, largura);
         this.jogoIniciado = false;
         this.log = "";
+        this.quantidadeNaviosDestruidos = 0;
         grid.addObservers(janela);
     }
 
     public int iniciarJogoVersusComputador(int dificuldade) {
         this.resetarJogo();
         this.jogoIniciado = true;
+        this.versusComputador = true;
         this.geraGrid();
-        if (dificuldade == 0) {
+        if (dificuldade == 2) {
             quantTorpedos = 30;
         } else if (dificuldade == 1) {
             quantTorpedos = 45;
-        } else if (dificuldade == 2) {
+        } else if (dificuldade == 0) {
             quantTorpedos = 60;
         }
         log += "O jogo começou!";
-        this.grid.parseGrid();
         return quantTorpedos;
     }
 
     public int iniciarJogoVersusJogador(int dificuldade) {
-        this.resetarJogo();
-        if (grid.parseGrid()) {
-            if (dificuldade == 0) {
-                quantTorpedos = 30;
-            } else if (dificuldade == 1) {
-                quantTorpedos = 45;
-            } else if (dificuldade == 2) {
-                quantTorpedos = 60;
-            }
-        }
         this.jogoIniciado = true;
+        this.versusComputador = false;
+        if (dificuldade == 2) {
+            quantTorpedos = 30;
+        } else if (dificuldade == 1) {
+            quantTorpedos = 45;
+        } else if (dificuldade == 0) {
+            quantTorpedos = 60;
+        }
+        janela.atualizar();
         log += "O jogo começou!";
         return quantTorpedos;
     }
 
     public void resetarJogo() {
         quantTorpedos = 0;
-        this.grid.resetarGrid();
         this.jogoIniciado = false;
         this.log = "";
+        this.quantidadeNaviosDestruidos = 0;
+        this.grid.resetarGrid();
     }
 
     public boolean isJogoComecou() {
@@ -93,6 +89,10 @@ public class Controle {
             quantTorpedos -= 5;
         }
         refreshLog(x);
+        if (grid.isUltimoTorpedoDestruiuNavio())
+            quantidadeNaviosDestruidos++;
+        if (isFimDeJogo())
+            janela.mensagemFinalDeJogo(avaliaVitoria());
         return quantTorpedos;
     }
     //Função para atualizar o Log de ações do usuário
@@ -106,9 +106,9 @@ public class Controle {
         if (descricao.equalsIgnoreCase("água")) {
             log += "Você atirou na água!";
         } else if (descricao.equalsIgnoreCase("navio")) {
-            log += "O seu torpedo acertou um navio!";
-
-            log += this.grid.isUltimoTorpedoDestruiuNavio() ? "Você destruiu um navio." : "";
+            log += "Você acertou um navio.";
+        } else if (descricao.equalsIgnoreCase("destruido")) {
+            log += this.grid.isUltimoTorpedoDestruiuNavio() ? "Você destruiu um navio." : "Você perdeu um torpedo atirando em uma posição já descoberta!";
         } else if (descricao.equalsIgnoreCase("mina")) {
             log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
         } else if (descricao.equalsIgnoreCase("erro")) {
@@ -157,20 +157,14 @@ public class Controle {
     }
 
     public void inserirMina(Point ini) throws Exception {
-
         Mina mina = new Mina(ini);
         this.grid.inserirMina(mina);
-
     }
 
-    public void inserirNavio(String nome, Point ini, boolean direcao) {
+    public void inserirNavio(String nome, Point ini, boolean direcao) throws Exception {
         int tamanho = getTamanhoPorNome(nome);
         Navio navio = new Navio(nome, ini, tamanho, direcao);
-        try {
-            this.grid.inserirNavio(navio);
-        } catch (Exception E) {
-            System.out.println(E.getMessage());
-        }
+        this.grid.inserirNavio(navio);
     }
 
     public void geraGrid() {
@@ -240,4 +234,25 @@ public class Controle {
     public int getTorpedos() {
         return quantTorpedos;
     }
+
+    public boolean inseriuTodosNavios() {
+        return grid.parseGrid();
+    }
+
+    public boolean isFimDeJogo() {
+        return ((quantidadeNaviosDestruidos == 5) || quantTorpedos == 0) ? true : false;
+    }
+    
+    private boolean avaliaVitoria() {
+        return (quantidadeNaviosDestruidos == 5) ? true : false;
+    }
+
+    public boolean isJogoConfigurado() {
+        return grid.parseGrid();
+    }
+
+    public boolean isVersusComputador() {
+        return versusComputador;
+    }
+
 }
