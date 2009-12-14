@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  */
 @SuppressWarnings("serial")
-public class Entidade implements Serializable {
+public abstract class Entidade implements Serializable {
 	
 	//lista contendo os objetos observadores
 	protected ArrayList<Observer> listObs = new ArrayList<Observer>();
