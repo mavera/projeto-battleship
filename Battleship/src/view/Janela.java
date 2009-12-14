@@ -45,7 +45,7 @@ public class Janela extends JFrame implements Observer {
         painelDesenho.add(painelInfo = new PainelInfo(), BorderLayout.SOUTH);
         permissaoBotoes(false);
         getContentPane().add(painelPrincipal);
-        setPreferredSize(new Dimension(700, 500));
+        setPreferredSize(new Dimension(730, 500));
         setVisible(true);
     }
 
