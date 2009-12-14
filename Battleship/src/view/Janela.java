@@ -40,7 +40,7 @@ public class Janela extends JFrame implements Observer {
         painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.add(criaMenu(), BorderLayout.NORTH);
         painelLateral = new PainelLateral();
-        painelDesenho = painelTeste();
+        painelDesenho = painelDesenho();
         painelPrincipal.add(painelDesenho, BorderLayout.CENTER);
         painelDesenho.add(painelInfo = new PainelInfo(), BorderLayout.SOUTH);
         permissaoBotoes(false);
@@ -163,7 +163,6 @@ public class Janela extends JFrame implements Observer {
                         }
                     }
                 }
-
                 else {
                     botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
                     painelLateral.ativarBotaoPronto(mediator.isJogoConfigurado());
@@ -202,7 +201,7 @@ public class Janela extends JFrame implements Observer {
         }
     }
 
-    private JPanel painelTeste() {
+    private JPanel painelDesenho() {
         JPanel painelPrin = new JPanel(new BorderLayout());
         JPanel painel = new JPanel(new GridLayout(11, 11));
         String letras[] = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };

@@ -28,7 +28,7 @@ public class MediatorJanelaGrid extends Mediator {
 
     public MediatorJanelaGrid() {
         quantidadeTorpedos = 0;
-        this.janela = new Janela("Aplicativo", this);
+        this.janela = new Janela("Batalha Naval", this);
         this.altura = 10;
         this.largura = 10;
         this.grid = new Grid(altura, largura);
@@ -108,7 +108,7 @@ public class MediatorJanelaGrid extends Mediator {
         } else if (descricao.equalsIgnoreCase("destruido")) {
             log += this.grid.isUltimoTorpedoDestruiuNavio() ? "Você destruiu o navio " + grid.getNomeNavioDestruido() + "." : "Você perdeu um torpedo atirando em uma posição já descoberta!";
         } else if (descricao.equalsIgnoreCase("mina")) {
-            log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
+            log += this.grid.isUltimoTorpedoDestruiuMina() ? "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!" : "Você acertou uma mina já descoberta.";
         } else if (descricao.equalsIgnoreCase("erro")) {
             log += "Você perdeu um torpedo atirando em uma posição já descoberta!";
         }
@@ -209,7 +209,7 @@ public class MediatorJanelaGrid extends Mediator {
     }
     
     public boolean isJogoFinalizado() {
-        return ((quantidadeNaviosDestruidos == 5) || quantidadeTorpedos == 0) ? true : false;
+        return ((quantidadeNaviosDestruidos == 5) || quantidadeTorpedos <= 0) ? true : false;
     }
     
     private boolean isVitoria() {
