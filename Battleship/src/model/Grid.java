@@ -19,6 +19,7 @@ public class Grid extends Entidade {
     private boolean gridCompleto;
     private boolean ultimoTorpedoDestruiuNavio;
     private boolean ultimoTorpedoDestruiuMina;
+    private String nomeNavioDestruido;
 
     public ArrayList<Mina> getMinas() {
         return minas;
@@ -71,6 +72,7 @@ public class Grid extends Entidade {
         this.gridCompleto = false;
         this.ultimoTorpedoDestruiuNavio = false;
         this.ultimoTorpedoDestruiuMina = false;
+        this.nomeNavioDestruido = "";
         clearGrid();
     }
 
@@ -243,6 +245,7 @@ public class Grid extends Entidade {
 
                         }
                     }
+                    nomeNavioDestruido = n.getNome();
                     this.ultimoTorpedoDestruiuNavio = true;
                     n.setDestruido(destruido);
                     break verificacaoNavios;
@@ -291,5 +294,9 @@ public class Grid extends Entidade {
         minas = new ArrayList<Mina>();
         gridCompleto = false;
         notificar();
+    }
+
+    public String getNomeNavioDestruido() {
+        return nomeNavioDestruido;
     }
 }

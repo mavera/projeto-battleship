@@ -95,8 +95,7 @@ public class MediatorJanelaGrid extends Mediator {
         return quantidadeTorpedos;
     }
 
-    //Método para atualizar o Log de ações do usuário
-    //atualizada a cada tiro realizado
+    //Método para atualizar o Log de ações do usuário atualizada a cada tiro realizado
     public void refreshLog(Point ponto) {
         char[] letras = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
         String coordenada = "\n(" + letras[ponto.x] + "," + (ponto.y + 1) + ")";
@@ -107,7 +106,7 @@ public class MediatorJanelaGrid extends Mediator {
         } else if (descricao.equalsIgnoreCase("navio")) {
             log += "Você acertou um navio.";
         } else if (descricao.equalsIgnoreCase("destruido")) {
-            log += this.grid.isUltimoTorpedoDestruiuNavio() ? "Você destruiu um navio." : "Você perdeu um torpedo atirando em uma posição já descoberta!";
+            log += this.grid.isUltimoTorpedoDestruiuNavio() ? "Você destruiu o navio " + grid.getNomeNavioDestruido() + "." : "Você perdeu um torpedo atirando em uma posição já descoberta!";
         } else if (descricao.equalsIgnoreCase("mina")) {
             log += "O seu torpedo acertou uma mina!\nVocê acaba de perder 5 torpedos!";
         } else if (descricao.equalsIgnoreCase("erro")) {

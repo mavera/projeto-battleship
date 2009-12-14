@@ -57,12 +57,12 @@ public class Janela extends JFrame implements Observer {
         JMenuBar barraMenu = new JMenuBar();
         JMenu menuPrincipal = new JMenu("Principal");
         JMenu botaoNovoJogo = new JMenu("Novo Jogo");
-        JMenuItem contraComputador = new JMenuItem("Jogador vs. Computador");
-        JMenuItem contraJogador = new JMenuItem("Jogador vs. Jogador");
-        botaoNovoJogo.add(contraComputador);
-        botaoNovoJogo.add(contraJogador);
+        JMenuItem itemContraComputador = new JMenuItem("Jogador vs. Computador");
+        JMenuItem itemContraJogador = new JMenuItem("Jogador vs. Jogador");
+        botaoNovoJogo.add(itemContraComputador);
+        botaoNovoJogo.add(itemContraJogador);
 
-        contraComputador.addActionListener(new ActionListener() {
+        itemContraComputador.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
@@ -75,7 +75,7 @@ public class Janela extends JFrame implements Observer {
             }
         });
 
-        contraJogador.addActionListener(new ActionListener() {
+        itemContraJogador.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
@@ -111,8 +111,21 @@ public class Janela extends JFrame implements Observer {
             radioButtons[i].addItemListener(gerenciador);
         }
         radioButtons[1].setSelected(true);
+
+        JMenu menuAjuda = new JMenu("Ajuda");
+        JMenuItem itemSobre = new JMenuItem("Sobre");
+        final String mensagemSobre = "Batalha naval é um jogo de tabuleiro no qual o jogador tem de adivinhar em que \nquadrados estão os navios, dada uma quantidade limitada de torpedos disponíveis."
+                + "\n Para inserir os barcos na direção vertical clique com o botão direito.";
+        itemSobre.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(null, mensagemSobre, "Sobre", JOptionPane.PLAIN_MESSAGE);
+            }
+        });
+        menuAjuda.add(itemSobre);
         barraMenu.add(menuPrincipal);
         barraMenu.add(menuDificuldade);
+        barraMenu.add(menuAjuda);
 
         return barraMenu;
     }
