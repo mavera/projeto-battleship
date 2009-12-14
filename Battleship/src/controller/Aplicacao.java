@@ -2,10 +2,12 @@ package controller;
 
 /**
  *
- * @author carlosgaldino
+ * @author Carlos Henrique Silva Galdino
+ * @author Raphael Pereira de Faria
+ *
  */
 public class Aplicacao {
     public static void main(String[] args) {
-        Controle controle = new Controle();
+        new MediatorJanelaGrid();
     }
 }

@@ -1,34 +1,33 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package controller;
 
 import java.awt.Point;
 import java.util.Random;
 import model.Grid;
 import model.Mina;
+import model.MinaFactory;
 import model.Navio;
+import model.NavioFactory;
 import view.Janela;
 
 /**
  *
- * @author Raphael
+ * @author Carlos Henrique Silva Galdino
+ * @author Raphael Pereira de Faria
  *
  */
-public class Controle {
+public class MediatorJanelaGrid extends Mediator {
 
     private Grid grid;
     private Janela janela;
     private int largura, altura;
-    private int quantTorpedos;
+    private int quantidadeTorpedos;
     private boolean jogoIniciado;
     private String log;
     private int quantidadeNaviosDestruidos;
     private boolean versusComputador;
 
-    public Controle() {
-        quantTorpedos = 0;
+    public MediatorJanelaGrid() {
+        quantidadeTorpedos = 0;
         this.janela = new Janela("Aplicativo", this);
         this.altura = 10;
         this.largura = 10;
@@ -45,33 +44,33 @@ public class Controle {
         this.versusComputador = true;
         this.geraGrid();
         if (dificuldade == 2) {
-            quantTorpedos = 30;
+            quantidadeTorpedos = 30;
         } else if (dificuldade == 1) {
-            quantTorpedos = 45;
+            quantidadeTorpedos = 45;
         } else if (dificuldade == 0) {
-            quantTorpedos = 60;
+            quantidadeTorpedos = 60;
         }
         log += "O jogo começou!";
-        return quantTorpedos;
+        return quantidadeTorpedos;
     }
 
     public int iniciarJogoVersusJogador(int dificuldade) {
         this.jogoIniciado = true;
         this.versusComputador = false;
         if (dificuldade == 2) {
-            quantTorpedos = 30;
+            quantidadeTorpedos = 30;
         } else if (dificuldade == 1) {
-            quantTorpedos = 45;
+            quantidadeTorpedos = 45;
         } else if (dificuldade == 0) {
-            quantTorpedos = 60;
+            quantidadeTorpedos = 60;
         }
         janela.atualizar();
         log += "O jogo começou!";
-        return quantTorpedos;
+        return quantidadeTorpedos;
     }
 
     public void resetarJogo() {
-        quantTorpedos = 0;
+        quantidadeTorpedos = 0;
         this.jogoIniciado = false;
         this.log = "";
         this.quantidadeNaviosDestruidos = 0;
@@ -82,22 +81,22 @@ public class Controle {
         return jogoIniciado;
     }
 
-    public int atirar(Point x) {
-        quantTorpedos--;
-        grid.atirar(x);
+    public int atirar(Point ponto) {
+        quantidadeTorpedos--;
+        grid.atirar(ponto);
         if(grid.isUltimoTorpedoDestruiuMina()){
-            quantTorpedos -= 5;
+            quantidadeTorpedos -= 5;
         }
-        refreshLog(x);
+        refreshLog(ponto);
         if (grid.isUltimoTorpedoDestruiuNavio())
             quantidadeNaviosDestruidos++;
-        if (isFimDeJogo())
-            janela.mensagemFinalDeJogo(avaliaVitoria());
-        return quantTorpedos;
+        if (isJogoFinalizado())
+            janela.mensagemFinalDeJogo(isVitoria());
+        return quantidadeTorpedos;
     }
-    //Função para atualizar o Log de ações do usuário
-    //atualizada a cada tiro realizado
 
+    //Método para atualizar o Log de ações do usuário
+    //atualizada a cada tiro realizado
     public void refreshLog(Point ponto) {
         char[] letras = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
         String coordenada = "\n(" + letras[ponto.x] + "," + (ponto.y + 1) + ")";
@@ -114,26 +113,6 @@ public class Controle {
         } else if (descricao.equalsIgnoreCase("erro")) {
             log += "Você perdeu um torpedo atirando em uma posição já descoberta!";
         }
-    }
-
-    public Grid getGrid() {
-        return grid;
-    }
-
-    public void setGrid(Grid grid) {
-        this.grid = grid;
-    }
-
-    public Janela getJanela() {
-        return janela;
-    }
-
-    public void setJanela(Janela janela) {
-        this.janela = janela;
-    }
-
-    public int[][] whatChanged() {
-        return this.grid.getMat();
     }
 
     public String getLog() {
@@ -157,13 +136,13 @@ public class Controle {
     }
 
     public void inserirMina(Point ini) throws Exception {
-        Mina mina = new Mina(ini);
+        Mina mina = MinaFactory.criarMina(ini);
         this.grid.inserirMina(mina);
     }
 
     public void inserirNavio(String nome, Point ini, boolean direcao) throws Exception {
         int tamanho = getTamanhoPorNome(nome);
-        Navio navio = new Navio(nome, ini, tamanho, direcao);
+        Navio navio = NavioFactory.criarNavio(nome, ini, tamanho, direcao);
         this.grid.inserirNavio(navio);
     }
 
@@ -174,29 +153,24 @@ public class Controle {
 
     public void geraNavios() {
         int i;
-        Navio[] navios = {new Navio("Battleship", 4),
-            new Navio("Cruiser", 3),
-            new Navio("Submarine", 3),
-            new Navio("Destroyer", 2),
-            new Navio("Patrol Boat", 1)};
         Random gerador = new Random(System.currentTimeMillis());
-        for (i = 0; i < navios.length; i++) {
-            Navio n = navios[i];
-            int tamanhoLimite = 10 - n.getTamanho();
+        for (i = 0; i < NavioFactory.TipoNavio.values().length; i++) {
+            Navio navio = NavioFactory.criarNavio(NavioFactory.TipoNavio.values()[i]);
+            int tamanhoLimite = 10 - navio.getTamanho();
             int posicaoRandomica = gerador.nextInt(tamanhoLimite * tamanhoLimite);
             Point inicio = new Point(posicaoRandomica % tamanhoLimite, (int) (posicaoRandomica / tamanhoLimite));
             boolean direcao = gerador.nextBoolean();
-            n.setInicio(inicio);
-            n.setDirecao(direcao);
+            navio.setInicio(inicio);
+            navio.setDirecao(direcao);
             Point fim;
             if (!direcao) {
-                fim = new Point(inicio.x, inicio.y + n.getTamanho() - 1);
+                fim = new Point(inicio.x, inicio.y + navio.getTamanho() - 1);
             } else {
-                fim = new Point(inicio.x + n.getTamanho() - 1, inicio.y);
+                fim = new Point(inicio.x + navio.getTamanho() - 1, inicio.y);
             }
-            n.setFim(fim);
+            navio.setFim(fim);
             try {
-                grid.inserirNavio(n);
+                grid.inserirNavio(navio);
             } catch (Exception E) {
                 i--;
             }
@@ -209,7 +183,7 @@ public class Controle {
         while (quantMinasInseridas < 2) {
             quantMinasInseridas++;
             int posicaoRandomica = gerador.nextInt(81);
-            Mina m = new Mina(posicaoRandomica % 9, posicaoRandomica / 9);
+            Mina m = MinaFactory.criarMina(posicaoRandomica % 9, posicaoRandomica / 9);
             try {
                 grid.inserirMina(m);
 
@@ -232,18 +206,14 @@ public class Controle {
     }
 
     public int getTorpedos() {
-        return quantTorpedos;
-    }
-
-    public boolean inseriuTodosNavios() {
-        return grid.parseGrid();
-    }
-
-    public boolean isFimDeJogo() {
-        return ((quantidadeNaviosDestruidos == 5) || quantTorpedos == 0) ? true : false;
+        return quantidadeTorpedos;
     }
     
-    private boolean avaliaVitoria() {
+    public boolean isJogoFinalizado() {
+        return ((quantidadeNaviosDestruidos == 5) || quantidadeTorpedos == 0) ? true : false;
+    }
+    
+    private boolean isVitoria() {
         return (quantidadeNaviosDestruidos == 5) ? true : false;
     }
 

@@ -1,6 +1,6 @@
 package view;
 
-import controller.Controle;
+import controller.MediatorJanelaGrid;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -20,8 +20,7 @@ public class Janela extends JFrame implements Observer {
     private ButtonGroup grupo;
     private JRadioButtonMenuItem radioButtons[];
     private int dificuldade;
-    private JMenu botaoNovoJogo;
-    private Controle controle;
+    private MediatorJanelaGrid mediator;
     private PainelInfo painelInfo;
     private PainelLateral painelLateral;
     private JButton botoes[][];
@@ -29,15 +28,14 @@ public class Janela extends JFrame implements Observer {
     /**
      * Construtor do Frame
      * @param titulo título do frame
-     * @param cont1  objeto da classe controle
+     * @param mediator objeto da classe mediator
      */
-    public Janela(String titulo, Controle cont1) {
+    public Janela(String titulo, MediatorJanelaGrid mediator) {
         super(titulo);
-        this.controle = cont1;
-        //this.grid = grid;
+        this.mediator = mediator;
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 500);
-        //setResizable(false);
+        setResizable(false);
         setLocationRelativeTo(null);
         painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.add(criaMenu(), BorderLayout.NORTH);
@@ -57,8 +55,8 @@ public class Janela extends JFrame implements Observer {
      */
     private JMenuBar criaMenu() {
         JMenuBar barraMenu = new JMenuBar();
-        JMenu principal = new JMenu("Principal");
-        botaoNovoJogo = new JMenu("Novo Jogo");
+        JMenu menuPrincipal = new JMenu("Principal");
+        JMenu botaoNovoJogo = new JMenu("Novo Jogo");
         JMenuItem contraComputador = new JMenuItem("Jogador vs. Computador");
         JMenuItem contraJogador = new JMenuItem("Jogador vs. Jogador");
         botaoNovoJogo.add(contraComputador);
@@ -68,8 +66,8 @@ public class Janela extends JFrame implements Observer {
 
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
-                painelLateral.atualizarTorpedos(controle.iniciarJogoVersusComputador(dificuldade));
-                painelInfo.atualizarInformacoes(controle.getLog());
+                painelLateral.atualizarTorpedos(mediator.iniciarJogoVersusComputador(dificuldade));
+                painelInfo.atualizarInformacoes(mediator.getLog());
                 permissaoBotoes(true);
                 pack();
                 repaint();
@@ -82,8 +80,8 @@ public class Janela extends JFrame implements Observer {
             public void actionPerformed(ActionEvent e) {
                 painelPrincipal.add(painelLateral, BorderLayout.EAST);
                 painelLateral.atualizarCombo();
-                controle.resetarJogo();
-                painelInfo.atualizarInformacoes(controle.getLog());
+                mediator.resetarJogo();
+                painelInfo.atualizarInformacoes(mediator.getLog());
                 permissaoBotoes(true);
                 pack();
                 repaint();
@@ -99,22 +97,22 @@ public class Janela extends JFrame implements Observer {
             }
             
         });
-        principal.add(botaoNovoJogo);
-        principal.add(botaoSair);
+        menuPrincipal.add(botaoNovoJogo);
+        menuPrincipal.add(botaoSair);
 
-        JMenu terrenos = new JMenu("Dificuldade");
+        JMenu menuDificuldade = new JMenu("Dificuldade");
         grupo = new ButtonGroup();
         radioButtons = new JRadioButtonMenuItem[nomeRadios.length];
         Gerenciador gerenciador = new Gerenciador();
         for (int i = 0; i < nomeRadios.length; i++) {
             radioButtons[i] = new JRadioButtonMenuItem(nomeRadios[i]);
-            terrenos.add(radioButtons[i]);
+            menuDificuldade.add(radioButtons[i]);
             grupo.add(radioButtons[i]);
             radioButtons[i].addItemListener(gerenciador);
         }
         radioButtons[1].setSelected(true);
-        barraMenu.add(principal);
-        barraMenu.add(terrenos);
+        barraMenu.add(menuPrincipal);
+        barraMenu.add(menuDificuldade);
 
         return barraMenu;
     }
@@ -134,12 +132,11 @@ public class Janela extends JFrame implements Observer {
     }
 
     public void atualizar() {
-        //TODO adicionar o comportamento quando o jogo começou
-        int matriz[][] = controle.getMatriz();
+        int matriz[][] = mediator.getMatriz();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
-                if (controle.isJogoComecou()) {
-                    if (controle.isVersusComputador()) {
+                if (mediator.isJogoComecou()) {
+                    if (mediator.isVersusComputador()) {
                         if (matriz[i][j] != Enum.NAVIO.getValor() && matriz[i][j] != Enum.MINA.getValor()) {
                             botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
                         }
@@ -156,7 +153,7 @@ public class Janela extends JFrame implements Observer {
 
                 else {
                     botoes[i][j].setBackground(Enum.getCorPorValor(matriz[i][j]));
-                    painelLateral.ativarBotaoPronto(controle.isJogoConfigurado());
+                    painelLateral.ativarBotaoPronto(mediator.isJogoConfigurado());
                 }
             }
         }
@@ -177,7 +174,7 @@ public class Janela extends JFrame implements Observer {
         else
             JOptionPane.showMessageDialog(null, "Que pena! Você perdeu o jogo.", "Final de jogo", JOptionPane.INFORMATION_MESSAGE);
         permissaoBotoes(false);
-        controle.resetarJogo();
+        mediator.resetarJogo();
     }
 
     /**
@@ -212,23 +209,23 @@ public class Janela extends JFrame implements Observer {
                                 Point ponto = interacaoMouse(botao.getLocation().x, botao.getLocation().y);
                                 String selecionado = painelLateral.opcaoSelecionada();
                                  try {
-                                    if (!controle.isJogoComecou()) {
+                                    if (!mediator.isJogoComecou()) {
                                          if (e.getButton() == MouseEvent.BUTTON1) {
                                             if (!selecionado.contains("Mina"))
-                                                controle.inserirNavio(painelLateral.opcaoSelecionada(), ponto, false);
+                                                mediator.inserirNavio(painelLateral.opcaoSelecionada(), ponto, false);
                                             else
-                                                controle.inserirMina(ponto);
+                                                mediator.inserirMina(ponto);
                                         }
                                         else if (e.getButton() == MouseEvent.BUTTON3) {
                                             if (!selecionado.contains("Mina"))
-                                                controle.inserirNavio(painelLateral.opcaoSelecionada(), ponto, true);
+                                                mediator.inserirNavio(painelLateral.opcaoSelecionada(), ponto, true);
                                             else
-                                                controle.inserirMina(ponto);
+                                                mediator.inserirMina(ponto);
                                         }
                                     }
                                     else {
-                                        painelLateral.atualizarTorpedos(controle.atirar(ponto));
-                                        painelInfo.atualizarInformacoes(controle.getLog());
+                                        painelLateral.atualizarTorpedos(mediator.atirar(ponto));
+                                        painelInfo.atualizarInformacoes(mediator.getLog());
                                     }
                                 } catch (Exception exception) {
                                     JOptionPane.showMessageDialog(null, exception.getMessage(), "Informação", JOptionPane.WARNING_MESSAGE);
@@ -276,7 +273,6 @@ public class Janela extends JFrame implements Observer {
             this.add(scrollPane, BorderLayout.WEST);
         }
 
-        //TODO implementar método das mensagens do board
         public void atualizarInformacoes(String info) {
             textArea.setText(info);
         }
@@ -298,7 +294,7 @@ public class Janela extends JFrame implements Observer {
             botaoPronto.addActionListener(new ActionListener() {
 
                 public void actionPerformed(ActionEvent e) {
-                    atualizarTorpedos(controle.iniciarJogoVersusJogador(dificuldade));
+                    atualizarTorpedos(mediator.iniciarJogoVersusJogador(dificuldade));
                 }
             });
             botaoPronto.setEnabled(false);

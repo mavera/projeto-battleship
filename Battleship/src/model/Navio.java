@@ -1,14 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.awt.Point;
 
 /**
  *
- * @author Raphael
+ * @author Carlos Henrique Silva Galdino
+ * @author Raphael Pereira de Faria
  *
  */
 public class Navio {
@@ -27,19 +24,6 @@ public class Navio {
         this.fim = null;
         this.destruido = false;
         this.direcao = false;
-    }
-    public Navio(String nome, int tamanho, Point inicio, Point fim) {
-
-        this.nome = nome;
-        this.tamanho = tamanho;
-        this.inicio = inicio;
-        this.fim = fim;
-        this.destruido = false;
-        this.direcao = (inicio.x == fim.x ? false : true);
-    }
-
-    public Navio(String nome, Point inicio, Point fim) {
-        this(nome, ((inicio.x == fim.x) ? fim.y - inicio.y : fim.x - inicio.x) + 1, inicio, fim);
     }
 
     public Navio(String nome, Point inicio, int tamanho, boolean direcao) {

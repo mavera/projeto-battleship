@@ -1,22 +1,19 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package model;
 
 import java.awt.Point;
 
 /**
  *
- * @author Raphael
+ * @author Carlos Henrique Silva Galdino
+ * @author Raphael Pereira de Faria
  *
  */
 public class Mina extends Point {
 
     boolean destruida;
 
-    public Mina(Point p) {
-        super(p);
+    public Mina(Point ponto) {
+        super(ponto);
         this.destruida = false;
     }
 
